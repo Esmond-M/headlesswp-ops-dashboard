@@ -2,12 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { fetchCaseStudies } from '../lib/api';
 import { scoreCaseStudy } from '../lib/caseStudyScore';
+import { plainText } from '../lib/text';
 
 type CompletenessFilter = 'all' | 'complete' | 'needs-work';
 
 export function PortfolioIntelligencePage() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<CompletenessFilter>('all');
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const caseStudiesQuery = useQuery({
     queryKey: ['case-studies'],
     queryFn: fetchCaseStudies,
@@ -19,7 +21,7 @@ export function PortfolioIntelligencePage() {
     result: scoreCaseStudy(caseStudy),
   })), [caseStudies]);
   const filtered = scored.filter(({ caseStudy, result }) => {
-    const matchesSearch = caseStudy.title.rendered.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = plainText(caseStudy.title.rendered).toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === 'all'
       || (filter === 'complete' && result.score === 100)
       || (filter === 'needs-work' && result.score < 100);
@@ -29,6 +31,10 @@ export function PortfolioIntelligencePage() {
   const averageScore = scored.length === 0
     ? 0
     : Math.round(scored.reduce((total, item) => total + item.result.score, 0) / scored.length);
+  const selected = scored.find(({ caseStudy }) => caseStudy.id === selectedId);
+  const selectedTerms = selected?.caseStudy._embedded?.['wp:term']?.flat() ?? [];
+  const selectedTypes = selectedTerms.filter((term) => term.taxonomy === 'project_type');
+  const selectedStacks = selectedTerms.filter((term) => term.taxonomy === 'project_stack');
 
   return (
     <section className="page">
@@ -66,15 +72,50 @@ export function PortfolioIntelligencePage() {
             {filtered.map(({ caseStudy, result }) => (
               <article className="case-study-row" key={caseStudy.id}>
                 <div>
-                  <h2>{caseStudy.title.rendered}</h2>
+                  <h2>{plainText(caseStudy.title.rendered)}</h2>
                   <p>{caseStudy.meta?.emclient_client_name || 'Client not entered'} · {caseStudy.meta?.emclient_role || 'Role not entered'}</p>
                   {result.missing.length > 0 && <small>Missing: {result.missing.join(', ')}</small>}
                 </div>
-                <strong className={result.score === 100 ? 'score complete' : 'score'}>{result.score}%</strong>
+                <div className="case-study-actions">
+                  <strong className={result.score === 100 ? 'score complete' : 'score'}>{result.score}%</strong>
+                  <button type="button" onClick={() => setSelectedId(caseStudy.id)}>Details</button>
+                </div>
               </article>
             ))}
             {filtered.length === 0 && <article className="card"><p>No Case Studies match this view.</p></article>}
           </div>
+
+          {selected && (
+            <aside className="detail-panel" aria-label="Case Study details">
+              <div className="detail-panel-header">
+                <div>
+                  <span className="eyebrow">Case Study Details</span>
+                  <h2>{plainText(selected.caseStudy.title.rendered)}</h2>
+                </div>
+                <button type="button" aria-label="Close Case Study details" onClick={() => setSelectedId(null)}>Close</button>
+              </div>
+              <div className="detail-grid">
+                <div><span>Client / Organization</span><strong>{selected.caseStudy.meta?.emclient_client_name || 'Not entered'}</strong></div>
+                <div><span>Role</span><strong>{selected.caseStudy.meta?.emclient_role || 'Not entered'}</strong></div>
+                <div><span>Completion Year</span><strong>{selected.caseStudy.meta?.emclient_completion_year || 'Not entered'}</strong></div>
+                <div><span>Completeness</span><strong>{selected.result.score}%</strong></div>
+              </div>
+              <div className="detail-copy">
+                <div><span>Challenge</span><p>{selected.caseStudy.meta?.emclient_challenge || 'Not entered'}</p></div>
+                <div><span>Solution</span><p>{selected.caseStudy.meta?.emclient_solution || 'Not entered'}</p></div>
+                <div><span>Outcome</span><p>{selected.caseStudy.meta?.emclient_outcome || 'Not entered'}</p></div>
+              </div>
+              <div className="detail-terms">
+                <div><span>Project Type</span><p>{selectedTypes.map((term) => term.name).join(', ') || 'Not assigned'}</p></div>
+                <div><span>Technology Stack</span><p>{selectedStacks.map((term) => term.name).join(', ') || 'Not assigned'}</p></div>
+              </div>
+              <div className="detail-links">
+                {selected.caseStudy.meta?.emclient_project_url && <a href={selected.caseStudy.meta.emclient_project_url} target="_blank" rel="noreferrer">Project URL</a>}
+                {selected.caseStudy.meta?.emclient_repository_url && <a href={selected.caseStudy.meta.emclient_repository_url} target="_blank" rel="noreferrer">Repository</a>}
+                <a href={selected.caseStudy.link} target="_blank" rel="noreferrer">WordPress entry</a>
+              </div>
+            </aside>
+          )}
         </>
       )}
     </section>
