@@ -77,6 +77,11 @@ export async function fetchRecentPosts(limit = 5): Promise<WpPost[]> {
   return validate(z.array(wpPostSchema), raw, 'posts');
 }
 
+export async function fetchAllPosts(): Promise<WpPost[]> {
+  const raw = await getJson(`${WP_BASE}/posts?per_page=100`);
+  return validate(z.array(wpPostSchema), raw, 'all posts');
+}
+
 export async function fetchEditorialPosts(page = 1, perPage = 10): Promise<PaginatedPosts> {
   const response = await fetch(`${WP_BASE}/posts?page=${page}&per_page=${perPage}`);
   if (!response.ok) {
