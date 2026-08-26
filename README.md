@@ -55,7 +55,7 @@ wp --path="C:\\Users\\PC\\Local Sites\\e-headless-wp\\app\\public" headless-ops 
 Vite proxies /wp-json to your local WordPress domain in development.
 
 Current target in vite.config.ts:
-- http://e-headlesswp.local
+- http://e-headless-wp.local
 
 If your Local domain is different, update that target.
 

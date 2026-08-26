@@ -4,7 +4,7 @@ Use this checklist while building the dashboard.
 
 ## 1) Local Site
 - Create Local app site named e-headlesswp.
-- Confirm site URL works in browser, for example: http://e-headlesswp.local.
+- Confirm site URL works in browser, for example: http://e-headless-wp.local.
 
 ## 2) Permalinks
 - In WordPress admin, go to Settings -> Permalinks.

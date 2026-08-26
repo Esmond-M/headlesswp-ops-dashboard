@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/wp-json': {
-        target: 'http://e-headlesswp.local',
+        target: 'http://e-headless-wp.local',
         changeOrigin: true,
         secure: false,
       },
