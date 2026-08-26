@@ -34,6 +34,9 @@ const wpPostSchema = z.object({
   status: z.string().optional(),
   title: wpRenderedSchema,
   excerpt: wpRenderedSchema.optional(),
+  _embedded: z.object({
+    'wp:term': z.array(z.array(wpTermSchema)).optional(),
+  }).optional(),
 });
 
 export type WpPost = z.infer<typeof wpPostSchema>;
@@ -83,7 +86,7 @@ export async function fetchAllPosts(): Promise<WpPost[]> {
 }
 
 export async function fetchEditorialPosts(page = 1, perPage = 10): Promise<PaginatedPosts> {
-  const response = await fetch(`${WP_BASE}/posts?page=${page}&per_page=${perPage}`);
+  const response = await fetch(`${WP_BASE}/posts?page=${page}&per_page=${perPage}&_embed=1`);
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status} editorial posts`);
   }

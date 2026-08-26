@@ -5,6 +5,8 @@ export type SavedEditorialView = {
   name: string;
   search: string;
   status: string;
+  category: string;
+  staleOnly: boolean;
   sort: QueueSortOrder;
 };
 
@@ -18,7 +20,13 @@ export function loadSavedEditorialViews(): SavedEditorialView[] {
     }
 
     const value: unknown = JSON.parse(stored);
-    return Array.isArray(value) ? value as SavedEditorialView[] : [];
+    return Array.isArray(value)
+      ? (value as SavedEditorialView[]).map((view) => ({
+        ...view,
+        category: view.category ?? 'all',
+        staleOnly: view.staleOnly ?? false,
+      }))
+      : [];
   } catch {
     return [];
   }

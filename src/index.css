@@ -180,6 +180,33 @@ body {
   min-width: 10rem;
 }
 
+.editorial-toolbar button,
+.checkbox-filter {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.editorial-toolbar button {
+  border: 1px solid #334256;
+  border-radius: 8px;
+  background: #1d2a3d;
+  color: #e8edf2;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+}
+
+.checkbox-filter {
+  color: #9eb0c5;
+  font-size: 0.85rem;
+}
+
+.checkbox-filter input {
+  accent-color: #6b9ed6;
+}
+
 .saved-views {
   align-items: center;
   display: flex;

@@ -9,6 +9,8 @@ import {
   type SavedEditorialView,
 } from '../lib/savedViews';
 
+const STALE_DAYS = 90;
+
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString(undefined, {
     year: 'numeric',
@@ -21,6 +23,9 @@ export function EditorialQueuePage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
+  const [category, setCategory] = useState('all');
+  const [staleOnly, setStaleOnly] = useState(false);
+  const [now] = useState(() => Date.now());
   const [sort, setSort] = useState<QueueSortOrder>('modified-desc');
   const [savedViews, setSavedViews] = useState<SavedEditorialView[]>(loadSavedEditorialViews);
   const [viewName, setViewName] = useState('');
@@ -39,7 +44,7 @@ export function EditorialQueuePage() {
 
     setSavedViews((views) => [
       ...views.filter((view) => view.name.toLowerCase() !== name.toLowerCase()),
-      { id: crypto.randomUUID(), name, search, status, sort },
+      { id: crypto.randomUUID(), name, search, status, category, staleOnly, sort },
     ]);
     setViewName('');
   }
@@ -47,13 +52,31 @@ export function EditorialQueuePage() {
   function loadView(view: SavedEditorialView) {
     setSearch(view.search);
     setStatus(view.status);
+    setCategory(view.category);
+    setStaleOnly(view.staleOnly);
     setSort(view.sort);
     setPage(1);
   }
 
-  const posts = [...(postsQuery.data?.posts ?? [])]
+  function clearFilters() {
+    setSearch('');
+    setStatus('all');
+    setCategory('all');
+    setStaleOnly(false);
+    setPage(1);
+  }
+
+  const loadedPosts = postsQuery.data?.posts ?? [];
+  const categories = [...new Map(
+    loadedPosts.flatMap((post) => post._embedded?.['wp:term']?.flat() ?? [])
+      .filter((term) => term.taxonomy === 'category')
+      .map((term) => [term.id, term]),
+  ).values()].sort((first, second) => first.name.localeCompare(second.name));
+  const posts = [...loadedPosts]
     .filter((post) => status === 'all' || post.status === status)
     .filter((post) => plainText(post.title.rendered).toLowerCase().includes(search.toLowerCase()))
+    .filter((post) => category === 'all' || post._embedded?.['wp:term']?.flat().some((term) => term.taxonomy === 'category' && term.slug === category))
+    .filter((post) => !staleOnly || (now - new Date(post.modified).getTime()) > STALE_DAYS * 86400000)
     .sort((first, second) => {
       if (sort === 'title-asc') {
         return plainText(first.title.rendered).localeCompare(plainText(second.title.rendered));
@@ -81,11 +104,20 @@ export function EditorialQueuePage() {
           <option value="publish">Published</option>
           <option value="draft">Draft</option>
         </select>
+        <select aria-label="Filter by category" value={category} onChange={(event) => setCategory(event.target.value)}>
+          <option value="all">All categories</option>
+          {categories.map((term) => <option key={term.id} value={term.slug}>{term.name}</option>)}
+        </select>
         <select aria-label="Sort posts" value={sort} onChange={(event) => setSort(event.target.value as QueueSortOrder)}>
           <option value="modified-desc">Recently modified</option>
           <option value="modified-asc">Least recently modified</option>
           <option value="title-asc">Title A-Z</option>
         </select>
+        <label className="checkbox-filter">
+          <input type="checkbox" checked={staleOnly} onChange={(event) => setStaleOnly(event.target.checked)} />
+          Stale only ({STALE_DAYS}+ days)
+        </label>
+        <button type="button" onClick={clearFilters}>Clear filters</button>
       </div>
 
       <div className="saved-views">
@@ -106,7 +138,7 @@ export function EditorialQueuePage() {
       {!postsQuery.isLoading && !postsQuery.isError && (
         <>
           <div className="queue-summary">
-            <span>{posts.length} posts on this page</span>
+            <span>{posts.length} matching posts on this page</span>
             <span>{postsQuery.data?.total ?? 0} total posts</span>
           </div>
           <div className="editorial-list">
