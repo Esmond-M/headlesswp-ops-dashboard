@@ -1,4 +1,5 @@
 import type { WpCaseStudy, WpPost } from './api';
+import { plainText } from './text';
 
 export type AuditSeverity = 'high' | 'medium' | 'low';
 
@@ -11,10 +12,6 @@ export type AuditFinding = {
   message: string;
   severity: AuditSeverity;
 };
-
-function plainText(value: string | undefined): string {
-  return value?.replace(/<[^>]+>/g, '').trim() ?? '';
-}
 
 function auditBaseContent(content: WpPost, contentType: AuditFinding['contentType']): AuditFinding[] {
   const title = plainText(content.title.rendered) || 'Untitled content';

@@ -1,12 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { fetchEditorialPosts } from '../lib/api';
+import { plainText } from '../lib/text';
 
 type SortOrder = 'modified-desc' | 'modified-asc' | 'title-asc';
-
-function stripHtml(value: string): string {
-  return value.replace(/<[^>]+>/g, '').trim();
-}
 
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString(undefined, {
@@ -28,10 +25,10 @@ export function EditorialQueuePage() {
 
   const posts = [...(postsQuery.data?.posts ?? [])]
     .filter((post) => status === 'all' || post.status === status)
-    .filter((post) => stripHtml(post.title.rendered).toLowerCase().includes(search.toLowerCase()))
+    .filter((post) => plainText(post.title.rendered).toLowerCase().includes(search.toLowerCase()))
     .sort((first, second) => {
       if (sort === 'title-asc') {
-        return stripHtml(first.title.rendered).localeCompare(stripHtml(second.title.rendered));
+        return plainText(first.title.rendered).localeCompare(plainText(second.title.rendered));
       }
       const difference = new Date(second.modified).getTime() - new Date(first.modified).getTime();
       return sort === 'modified-desc' ? difference : -difference;
@@ -76,7 +73,7 @@ export function EditorialQueuePage() {
             {posts.map((post) => (
               <article className="editorial-row" key={post.id}>
                 <div>
-                  <h2>{stripHtml(post.title.rendered) || 'Untitled post'}</h2>
+                  <h2>{plainText(post.title.rendered) || 'Untitled post'}</h2>
                   <p>Last modified {formatDate(post.modified)}</p>
                 </div>
                 <span className={`status status-${post.status ?? 'unknown'}`}>{post.status ?? 'unknown'}</span>

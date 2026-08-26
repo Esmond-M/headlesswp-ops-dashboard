@@ -1,4 +1,5 @@
 import type { WpCaseStudy } from './api';
+import { plainText } from './text';
 
 export type CaseStudyScore = {
   score: number;
@@ -20,7 +21,7 @@ export function scoreCaseStudy(caseStudy: WpCaseStudy): CaseStudyScore {
     },
     {
       label: 'excerpt',
-      complete: Boolean(caseStudy.excerpt?.rendered.replace(/<[^>]+>/g, '').trim()),
+      complete: Boolean(plainText(caseStudy.excerpt?.rendered)),
       points: 20,
     },
     {

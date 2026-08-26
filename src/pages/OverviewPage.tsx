@@ -2,10 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchAllPosts, fetchCaseStudies } from '../lib/api';
 import { scoreCaseStudy } from '../lib/caseStudyScore';
 import { auditCaseStudy, auditPost } from '../lib/contentAudit';
-
-function stripHtml(value: string): string {
-  return value.replace(/<[^>]+>/g, '').trim();
-}
+import { plainText } from '../lib/text';
 
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString(undefined, {
@@ -68,7 +65,7 @@ export function OverviewPage() {
                 <ul className="recent-list">
                   {recentPosts.map((post) => (
                     <li key={post.id}>
-                      <a href={post.link} target="_blank" rel="noreferrer">{stripHtml(post.title.rendered)}</a>
+                      <a href={post.link} target="_blank" rel="noreferrer">{plainText(post.title.rendered)}</a>
                       <span>{formatDate(post.modified)}</span>
                     </li>
                   ))}
