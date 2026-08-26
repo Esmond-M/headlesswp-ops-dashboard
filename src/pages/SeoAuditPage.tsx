@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { fetchAllPosts, fetchCaseStudies } from '../lib/api';
 import { auditCaseStudy, auditPost, type AuditFinding, type AuditSeverity } from '../lib/contentAudit';
+import { downloadCsv } from '../lib/csv';
 
 type SeverityFilter = 'all' | AuditSeverity;
 
@@ -18,6 +19,17 @@ export function SeoAuditPage() {
   const filtered = findings.filter((finding) => severity === 'all' || finding.severity === severity);
   const isLoading = postsQuery.isLoading || caseStudiesQuery.isLoading;
   const isError = postsQuery.isError || caseStudiesQuery.isError;
+
+  function exportFindings() {
+    downloadCsv('content-audit-findings.csv', filtered.map((finding) => ({
+      contentType: finding.contentType,
+      title: finding.title,
+      rule: finding.rule,
+      severity: finding.severity,
+      message: finding.message,
+      contentId: finding.contentId,
+    })));
+  }
 
   return (
     <section className="page">
@@ -44,6 +56,7 @@ export function SeoAuditPage() {
               <option value="medium">Medium</option>
               <option value="low">Low</option>
             </select>
+            <button type="button" onClick={exportFindings} disabled={filtered.length === 0}>Export CSV</button>
           </div>
 
           <div className="audit-list">

@@ -163,13 +163,23 @@ body {
 }
 
 .toolbar input,
-.toolbar select {
+.toolbar select,
+.toolbar button {
   border: 1px solid #334256;
   border-radius: 8px;
   background: #111820;
   color: #e8edf2;
   font: inherit;
   padding: 0.65rem 0.75rem;
+}
+
+.toolbar button {
+  cursor: pointer;
+}
+
+.toolbar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .toolbar input {

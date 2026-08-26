@@ -106,3 +106,4 @@ Keep frontend changes, WordPress changes, and generated build files in separate 
 - Portfolio Intelligence with live Case Study data, completeness scoring, search, and filters
 - Editorial Queue with filters, sorting, saved views, and stale-content flags
 - SEO Audit with live rule-based findings and severity filtering
+- CSV export for Case Study scores and audit findings

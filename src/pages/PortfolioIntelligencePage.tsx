@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { fetchCaseStudies } from '../lib/api';
 import { scoreCaseStudy } from '../lib/caseStudyScore';
+import { downloadCsv } from '../lib/csv';
 import { plainText } from '../lib/text';
 
 type CompletenessFilter = 'all' | 'complete' | 'needs-work';
@@ -36,6 +37,18 @@ export function PortfolioIntelligencePage() {
   const selectedTypes = selectedTerms.filter((term) => term.taxonomy === 'project_type');
   const selectedStacks = selectedTerms.filter((term) => term.taxonomy === 'project_stack');
 
+  function exportCaseStudies() {
+    downloadCsv('case-study-scores.csv', filtered.map(({ caseStudy, result }) => ({
+      title: plainText(caseStudy.title.rendered),
+      client: plainText(caseStudy.meta?.emclient_client_name) || 'Not entered',
+      role: plainText(caseStudy.meta?.emclient_role) || 'Not entered',
+      score: result.score,
+      missing: result.missing.join('; '),
+      projectUrl: caseStudy.meta?.emclient_project_url ?? '',
+      wordpressUrl: caseStudy.link,
+    })));
+  }
+
   return (
     <section className="page">
       <header className="page-header">
@@ -66,6 +79,7 @@ export function PortfolioIntelligencePage() {
               <option value="complete">Complete only</option>
               <option value="needs-work">Needs work</option>
             </select>
+            <button type="button" onClick={exportCaseStudies} disabled={filtered.length === 0}>Export CSV</button>
           </div>
 
           <div className="case-study-list">
