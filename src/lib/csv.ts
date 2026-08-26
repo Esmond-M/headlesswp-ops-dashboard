@@ -5,15 +5,21 @@ function escapeCsvValue(value: CsvRow[string]): string {
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-export function downloadCsv(filename: string, rows: CsvRow[]): void {
-  if (rows.length === 0) return;
-
+export function buildCsv(rows: CsvRow[]): string {
+  if (rows.length === 0) return '';
   const headers = Object.keys(rows[0]);
   const lines = [
     headers.join(','),
     ...rows.map((row) => headers.map((header) => escapeCsvValue(row[header])).join(',')),
   ];
-  const blob = new Blob([`\uFEFF${lines.join('\n')}`], { type: 'text/csv;charset=utf-8;' });
+  return lines.join('\n');
+}
+
+export function downloadCsv(filename: string, rows: CsvRow[]): void {
+  const csv = buildCsv(rows);
+  if (!csv) return;
+
+  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;

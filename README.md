@@ -71,9 +71,12 @@ These commands also appear in VS Code under **NPM Scripts**:
 | `npm run dev` | Start Vite for local browser development |
 | `npm run dev:host` | Start Vite and expose it on the local network |
 | `npm run lint` | Check ESLint rules |
+| `npm run test` | Run the frontend unit test suite once |
+| `npm run test:watch` | Re-run tests while files change |
+| `npm run test:coverage` | Run tests with coverage reporting |
 | `npm run typecheck` | Run the TypeScript compiler without emitting app files |
 | `npm run build` | Type-check and create the production `dist/` folder |
-| `npm run check` | Run lint, typecheck, and build together |
+| `npm run check` | Run lint, tests, typecheck, and build together |
 | `npm run preview` | Preview the latest production build locally |
 
 Recommended end-of-day check:
@@ -81,6 +84,8 @@ Recommended end-of-day check:
 ```bash
 npm run check
 ```
+
+Frontend unit tests live beside the business logic in `src/lib/` and cover Case Study scoring, content audit rules, WordPress entity decoding, and CSV escaping.
 
 ## dist Folder
 
