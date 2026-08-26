@@ -140,6 +140,84 @@ body {
   flex: 1;
 }
 
+.editorial-toolbar select {
+  min-width: 10rem;
+}
+
+.queue-summary,
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #9eb0c5;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.editorial-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.editorial-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid #2b3544;
+  background: #141a22;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+
+.editorial-row h2 {
+  font-size: 1rem;
+  margin: 0 0 0.3rem;
+}
+
+.editorial-row p {
+  color: #9eb0c5;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.status {
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.status-publish {
+  color: #6fd0a2;
+  background: #163427;
+}
+
+.status-draft {
+  color: #f0b45b;
+  background: #392b18;
+}
+
+.pagination {
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.pagination button {
+  border: 1px solid #334256;
+  border-radius: 8px;
+  background: #111820;
+  color: #e8edf2;
+  cursor: pointer;
+  padding: 0.55rem 0.8rem;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .case-study-list {
   display: grid;
   gap: 0.65rem;

@@ -29,12 +29,20 @@ const wpPostSchema = z.object({
   date: z.string(),
   modified: z.string(),
   link: z.string(),
+  author: z.number().optional(),
+  categories: z.array(z.number()).default([]),
   status: z.string().optional(),
   title: wpRenderedSchema,
   excerpt: wpRenderedSchema.optional(),
 });
 
 export type WpPost = z.infer<typeof wpPostSchema>;
+
+export type PaginatedPosts = {
+  posts: WpPost[];
+  total: number;
+  totalPages: number;
+};
 
 const wpCaseStudySchema = wpPostSchema.extend({
   featured_media: z.number().optional(),
@@ -67,6 +75,20 @@ async function getJson(url: string): Promise<unknown> {
 export async function fetchRecentPosts(limit = 5): Promise<WpPost[]> {
   const raw = await getJson(`${WP_BASE}/posts?per_page=${limit}`);
   return validate(z.array(wpPostSchema), raw, 'posts');
+}
+
+export async function fetchEditorialPosts(page = 1, perPage = 10): Promise<PaginatedPosts> {
+  const response = await fetch(`${WP_BASE}/posts?page=${page}&per_page=${perPage}`);
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status} editorial posts`);
+  }
+
+  const raw = await response.json();
+  return {
+    posts: validate(z.array(wpPostSchema), raw, 'editorial posts'),
+    total: Number(response.headers.get('X-WP-Total') ?? 0),
+    totalPages: Number(response.headers.get('X-WP-TotalPages') ?? 1),
+  };
 }
 
 export async function fetchCaseStudies(): Promise<WpCaseStudy[]> {
