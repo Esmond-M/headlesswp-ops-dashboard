@@ -94,6 +94,97 @@ body {
   margin-top: 0;
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.metric {
+  border: 1px solid #2b3544;
+  background: #141a22;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.metric span {
+  color: #9eb0c5;
+  display: block;
+  font-size: 0.85rem;
+}
+
+.metric strong {
+  display: block;
+  font-size: 1.8rem;
+  margin-top: 0.25rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.toolbar input,
+.toolbar select {
+  border: 1px solid #334256;
+  border-radius: 8px;
+  background: #111820;
+  color: #e8edf2;
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+}
+
+.toolbar input {
+  flex: 1;
+}
+
+.case-study-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.case-study-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid #2b3544;
+  background: #141a22;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+
+.case-study-row h2 {
+  font-size: 1rem;
+  margin: 0 0 0.3rem;
+}
+
+.case-study-row p,
+.case-study-row small {
+  color: #9eb0c5;
+  margin: 0;
+}
+
+.case-study-row small {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.score {
+  color: #f0b45b;
+  flex: 0 0 auto;
+}
+
+.score.complete {
+  color: #6fd0a2;
+}
+
+.error {
+  border-color: #8d4a4a;
+}
+
 ul {
   margin: 0.7rem 0 0;
   padding-left: 1rem;
@@ -111,5 +202,13 @@ li {
   .sidebar {
     border-right: 0;
     border-bottom: 1px solid #283141;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    flex-direction: column;
   }
 }

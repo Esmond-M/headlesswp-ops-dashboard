@@ -6,6 +6,24 @@ const WP_BASE = import.meta.env.DEV
 
 const wpRenderedSchema = z.object({ rendered: z.string() });
 
+const wpTermSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  slug: z.string(),
+  taxonomy: z.string(),
+});
+
+const caseStudyMetaSchema = z.object({
+  emclient_client_name: z.string().optional(),
+  emclient_role: z.string().optional(),
+  emclient_project_url: z.string().optional(),
+  emclient_repository_url: z.string().optional(),
+  emclient_completion_year: z.union([z.number(), z.string()]).optional(),
+  emclient_challenge: z.string().optional(),
+  emclient_solution: z.string().optional(),
+  emclient_outcome: z.string().optional(),
+}).optional();
+
 const wpPostSchema = z.object({
   id: z.number(),
   date: z.string(),
@@ -17,6 +35,18 @@ const wpPostSchema = z.object({
 });
 
 export type WpPost = z.infer<typeof wpPostSchema>;
+
+const wpCaseStudySchema = wpPostSchema.extend({
+  featured_media: z.number().optional(),
+  project_type: z.array(z.number()).default([]),
+  project_stack: z.array(z.number()).default([]),
+  meta: caseStudyMetaSchema,
+  _embedded: z.object({
+    'wp:term': z.array(z.array(wpTermSchema)).optional(),
+  }).optional(),
+});
+
+export type WpCaseStudy = z.infer<typeof wpCaseStudySchema>;
 
 function validate<T>(schema: z.ZodSchema<T>, input: unknown, source: string): T {
   const parsed = schema.safeParse(input);
@@ -37,4 +67,9 @@ async function getJson(url: string): Promise<unknown> {
 export async function fetchRecentPosts(limit = 5): Promise<WpPost[]> {
   const raw = await getJson(`${WP_BASE}/posts?per_page=${limit}`);
   return validate(z.array(wpPostSchema), raw, 'posts');
+}
+
+export async function fetchCaseStudies(): Promise<WpCaseStudy[]> {
+  const raw = await getJson(`${WP_BASE}/project_item?per_page=100&_embed=1`);
+  return validate(z.array(wpCaseStudySchema), raw, 'case studies');
 }

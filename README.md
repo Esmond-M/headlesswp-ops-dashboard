@@ -103,6 +103,6 @@ Keep frontend changes, WordPress changes, and generated build files in separate 
 
 ## Roadmap
 - Overview with live connectivity checks
-- Editorial Queue page
-- Portfolio Intelligence page
+- Portfolio Intelligence with live Case Study data, completeness scoring, search, and filters
+- Editorial Queue with filters, sorting, saved views, and stale-content flags
 - SEO Audit page
