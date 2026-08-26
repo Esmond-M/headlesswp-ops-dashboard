@@ -95,19 +95,19 @@ export function PortfolioIntelligencePage() {
                 <button type="button" aria-label="Close Case Study details" onClick={() => setSelectedId(null)}>Close</button>
               </div>
               <div className="detail-grid">
-                <div><span>Client / Organization</span><strong>{selected.caseStudy.meta?.emclient_client_name || 'Not entered'}</strong></div>
-                <div><span>Role</span><strong>{selected.caseStudy.meta?.emclient_role || 'Not entered'}</strong></div>
+                <div><span>Client / Organization</span><strong>{plainText(selected.caseStudy.meta?.emclient_client_name) || 'Not entered'}</strong></div>
+                <div><span>Role</span><strong>{plainText(selected.caseStudy.meta?.emclient_role) || 'Not entered'}</strong></div>
                 <div><span>Completion Year</span><strong>{selected.caseStudy.meta?.emclient_completion_year || 'Not entered'}</strong></div>
                 <div><span>Completeness</span><strong>{selected.result.score}%</strong></div>
               </div>
               <div className="detail-copy">
-                <div><span>Challenge</span><p>{selected.caseStudy.meta?.emclient_challenge || 'Not entered'}</p></div>
-                <div><span>Solution</span><p>{selected.caseStudy.meta?.emclient_solution || 'Not entered'}</p></div>
-                <div><span>Outcome</span><p>{selected.caseStudy.meta?.emclient_outcome || 'Not entered'}</p></div>
+                <div><span>Challenge</span><p>{plainText(selected.caseStudy.meta?.emclient_challenge) || 'Not entered'}</p></div>
+                <div><span>Solution</span><p>{plainText(selected.caseStudy.meta?.emclient_solution) || 'Not entered'}</p></div>
+                <div><span>Outcome</span><p>{plainText(selected.caseStudy.meta?.emclient_outcome) || 'Not entered'}</p></div>
               </div>
               <div className="detail-terms">
-                <div><span>Project Type</span><p>{selectedTypes.map((term) => term.name).join(', ') || 'Not assigned'}</p></div>
-                <div><span>Technology Stack</span><p>{selectedStacks.map((term) => term.name).join(', ') || 'Not assigned'}</p></div>
+                <div><span>Project Type</span><p>{selectedTypes.map((term) => plainText(term.name)).join(', ') || 'Not assigned'}</p></div>
+                <div><span>Technology Stack</span><p>{selectedStacks.map((term) => plainText(term.name)).join(', ') || 'Not assigned'}</p></div>
               </div>
               <div className="detail-links">
                 {selected.caseStudy.meta?.emclient_project_url && <a href={selected.caseStudy.meta.emclient_project_url} target="_blank" rel="noreferrer">Project URL</a>}
