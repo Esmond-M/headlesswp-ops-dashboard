@@ -1,9 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchEditorialPosts } from '../lib/api';
 import { plainText } from '../lib/text';
-
-type SortOrder = 'modified-desc' | 'modified-asc' | 'title-asc';
+import {
+  loadSavedEditorialViews,
+  saveEditorialViews,
+  type QueueSortOrder,
+  type SavedEditorialView,
+} from '../lib/savedViews';
 
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString(undefined, {
@@ -17,11 +21,35 @@ export function EditorialQueuePage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
-  const [sort, setSort] = useState<SortOrder>('modified-desc');
+  const [sort, setSort] = useState<QueueSortOrder>('modified-desc');
+  const [savedViews, setSavedViews] = useState<SavedEditorialView[]>(loadSavedEditorialViews);
+  const [viewName, setViewName] = useState('');
   const postsQuery = useQuery({
     queryKey: ['editorial-posts', page],
     queryFn: () => fetchEditorialPosts(page, 10),
   });
+
+  useEffect(() => {
+    saveEditorialViews(savedViews);
+  }, [savedViews]);
+
+  function saveCurrentView() {
+    const name = viewName.trim();
+    if (!name) return;
+
+    setSavedViews((views) => [
+      ...views.filter((view) => view.name.toLowerCase() !== name.toLowerCase()),
+      { id: crypto.randomUUID(), name, search, status, sort },
+    ]);
+    setViewName('');
+  }
+
+  function loadView(view: SavedEditorialView) {
+    setSearch(view.search);
+    setStatus(view.status);
+    setSort(view.sort);
+    setPage(1);
+  }
 
   const posts = [...(postsQuery.data?.posts ?? [])]
     .filter((post) => status === 'all' || post.status === status)
@@ -53,11 +81,23 @@ export function EditorialQueuePage() {
           <option value="publish">Published</option>
           <option value="draft">Draft</option>
         </select>
-        <select aria-label="Sort posts" value={sort} onChange={(event) => setSort(event.target.value as SortOrder)}>
+        <select aria-label="Sort posts" value={sort} onChange={(event) => setSort(event.target.value as QueueSortOrder)}>
           <option value="modified-desc">Recently modified</option>
           <option value="modified-asc">Least recently modified</option>
           <option value="title-asc">Title A-Z</option>
         </select>
+      </div>
+
+      <div className="saved-views">
+        <label htmlFor="view-name">Saved views</label>
+        <input id="view-name" placeholder="Name this view" value={viewName} onChange={(event) => setViewName(event.target.value)} />
+        <button type="button" onClick={saveCurrentView} disabled={!viewName.trim()}>Save</button>
+        {savedViews.map((view) => (
+          <span className="saved-view" key={view.id}>
+            <button type="button" onClick={() => loadView(view)}>{view.name}</button>
+            <button type="button" aria-label={`Delete ${view.name}`} onClick={() => setSavedViews((views) => views.filter((item) => item.id !== view.id))}>x</button>
+          </span>
+        ))}
       </div>
 
       {postsQuery.isLoading && <article className="card"><p>Loading editorial queue...</p></article>}
