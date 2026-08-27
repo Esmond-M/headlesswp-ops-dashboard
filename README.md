@@ -51,13 +51,23 @@ With Local running, the backend smoke test can be run from a terminal:
 wp --path="C:\\Users\\PC\\Local Sites\\e-headless-wp\\app\\public" headless-ops test
 ```
 
-## API Proxy
-Vite proxies /wp-json to your local WordPress domain in development.
+## WordPress Environments
+The dashboard supports separate local and production WordPress backends:
 
-Current target in vite.config.ts:
-- http://e-headless-wp.local
+| Mode | WordPress origin | Usage |
+| --- | --- | --- |
+| Development | `http://e-headless-wp.local` | `npm run dev` |
+| Production | `https://ops.esmondmccain.com` | `npm run build` and deployment |
 
-If your Local domain is different, update that target.
+The local app requests `/wp-json/wp/v2` through the Vite proxy. The production build uses `VITE_WP_ORIGIN` directly. Environment values are defined in `.env.local` or `.env.production`; use `.env.example` as the template.
+
+To test the production backend from the local Vite server:
+
+```bash
+npm run dev -- --mode production
+```
+
+This keeps the app at `http://localhost:5173` while proxying its WordPress requests to `https://ops.esmondmccain.com`.
 
 ## Scripts
 - npm run dev
