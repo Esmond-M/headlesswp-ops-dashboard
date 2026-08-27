@@ -1,6 +1,6 @@
 # React App Page Deployment
 
-This repository contains the source for the Content Operations dashboard. The production app is embedded as a standalone React page in the `esmond-theme` WordPress parent site.
+This repository contains the source for the Content Operations dashboard. The production app is embedded as a public portfolio demonstration in a standalone React page in the `esmond-theme` WordPress parent site.
 
 ## Current deployment
 
@@ -12,7 +12,7 @@ Theme app directory: react-projects/headless-ops-app/
 Theme template: page-123457117.php
 ```
 
-The backend theme is `em-client`, deployed at `ops.esmondmccain.com`. The parent `esmond-theme` repository hosts the compiled React assets and page template.
+The backend theme is `em-client`, deployed at `ops.esmondmccain.com`. The parent `esmond-theme` repository hosts the compiled React assets and page template. The backend remains private-oriented, while this frontend page is intentionally indexable as a portfolio project.
 
 ## Build
 
@@ -49,6 +49,8 @@ Update `esmond-theme/page-123457117.php` so its asset references match the new f
 ```
 
 Keep the page template as a minimal standalone HTML shell. Do not add `get_header()`, `get_footer()`, `wp_head()`, `wp_body_open()`, or `wp_footer()`. Those hooks load unrelated parent-theme/plugin markup and assets, including site navigation, SEO output, and the WordPress admin bar.
+
+The standalone shell should still provide public-page metadata: a descriptive title, meta description, canonical URL, Open Graph/Twitter descriptions, and `SoftwareApplication` JSON-LD. Do not add `noindex` to this portfolio page. Privacy controls belong to the `em-client` backend, not this public demonstration.
 
 ## Local and remote testing
 
