@@ -65,7 +65,7 @@ export function OverviewPage() {
                 <ul className="recent-list">
                   {recentPosts.map((post) => (
                     <li key={post.id}>
-                      <a href={post.link} target="_blank" rel="noreferrer">{plainText(post.title.rendered)}</a>
+                      <span>{plainText(post.title.rendered)}</span>
                       <span>{formatDate(post.modified)}</span>
                     </li>
                   ))}
